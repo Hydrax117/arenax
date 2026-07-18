@@ -2,25 +2,62 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
-import { Menu, X, Trophy, LayoutDashboard, User } from "lucide-react";
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  Menu,
+  X,
+  Trophy,
+  LayoutDashboard,
+  User,
+  LogOut,
+  ChevronDown,
+} from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { useAuth, signOut } from "@/lib/auth/use-auth";
 
 const NAV_LINKS = [
   { href: "/tournaments", label: "Tournaments", icon: Trophy },
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/profile", label: "Profile", icon: User },
 ];
 
 export function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, loading } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close user menu on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(e.target as Node)
+      ) {
+        setUserMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  async function handleSignOut() {
+    setUserMenuOpen(false);
+    setMobileOpen(false);
+    await signOut();
+    router.push("/");
+    router.refresh();
+  }
 
   return (
     <header
       className="sticky top-0 z-50 border-b border-border"
-      style={{ background: "rgba(10,10,10,0.92)", backdropFilter: "blur(12px)" }}
+      style={{
+        background: "rgba(10,10,10,0.92)",
+        backdropFilter: "blur(12px)",
+      }}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
@@ -28,7 +65,7 @@ export function Navbar() {
           {/* ── Logo ─────────────────────────────────────── */}
           <Link
             href="/"
-            className="flex items-center gap-2.5 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green rounded-md"
+            className="flex items-center gap-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green rounded-md"
             aria-label="ArenaX home"
           >
             <Image
@@ -71,31 +108,109 @@ export function Navbar() {
             })}
           </nav>
 
-          {/* ── Desktop CTAs ─────────────────────────────── */}
+          {/* ── Desktop auth ─────────────────────────────── */}
           <div className="hidden md:flex items-center gap-3">
-            <Link
-              href="/login"
-              className={cn(
-                "inline-flex items-center justify-center min-h-[44px] px-5 rounded-lg",
-                "text-sm font-semibold font-body tracking-wide transition-all duration-150",
-                "border border-border text-fg-secondary",
-                "hover:border-green hover:text-green hover:bg-[rgba(0,224,90,0.05)]",
-              )}
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/register"
-              className={cn(
-                "inline-flex items-center justify-center min-h-[44px] px-5 rounded-lg",
-                "text-sm font-bold font-body tracking-wide transition-all duration-150",
-                "bg-green text-bg-base",
-                "hover:bg-green-electric",
-                "shadow-[0_0_16px_rgba(0,224,90,0.28)] hover:shadow-[0_0_24px_rgba(0,255,102,0.55)]",
-              )}
-            >
-              Join Now
-            </Link>
+            {loading ? (
+              // Skeleton while auth resolves
+              <div className="h-9 w-24 rounded-lg bg-bg-surface animate-pulse" />
+            ) : user ? (
+              // ── Logged-in user menu ──────────────────────
+              <div className="relative" ref={userMenuRef}>
+                <button
+                  onClick={() => setUserMenuOpen((v) => !v)}
+                  aria-expanded={userMenuOpen}
+                  aria-haspopup="true"
+                  className={cn(
+                    "inline-flex items-center gap-2 min-h-[44px] px-3 rounded-lg",
+                    "text-sm font-semibold font-body transition-all duration-150",
+                    "border border-border text-fg-secondary",
+                    "hover:border-green hover:text-green",
+                  )}
+                >
+                  <div className="w-6 h-6 rounded-full bg-[rgba(0,224,90,0.15)] border border-[rgba(0,224,90,0.25)] flex items-center justify-center">
+                    <User size={12} className="text-green" aria-hidden="true" />
+                  </div>
+                  <span className="max-w-[120px] truncate">
+                    {user.email?.split("@")[0]}
+                  </span>
+                  <ChevronDown
+                    size={14}
+                    className={cn(
+                      "transition-transform duration-150",
+                      userMenuOpen && "rotate-180",
+                    )}
+                    aria-hidden="true"
+                  />
+                </button>
+
+                {userMenuOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-52 glass-green rounded-xl overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+                    <div className="px-4 py-3 border-b border-border">
+                      <p className="text-xs text-fg-muted font-body">
+                        Signed in as
+                      </p>
+                      <p className="text-sm text-fg-primary font-semibold font-body truncate">
+                        {user.email}
+                      </p>
+                    </div>
+                    <div className="py-1">
+                      <Link
+                        href="/profile"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-fg-secondary hover:text-green hover:bg-[rgba(0,224,90,0.07)] transition-colors font-body"
+                      >
+                        <User size={14} aria-hidden="true" />
+                        My Profile
+                      </Link>
+                      <Link
+                        href="/dashboard"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-fg-secondary hover:text-green hover:bg-[rgba(0,224,90,0.07)] transition-colors font-body"
+                      >
+                        <LayoutDashboard size={14} aria-hidden="true" />
+                        Dashboard
+                      </Link>
+                    </div>
+                    <div className="border-t border-border py-1">
+                      <button
+                        onClick={handleSignOut}
+                        className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-error hover:bg-[rgba(255,59,48,0.07)] transition-colors font-body"
+                      >
+                        <LogOut size={14} aria-hidden="true" />
+                        Sign Out
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              // ── Guest CTAs ───────────────────────────────
+              <>
+                <Link
+                  href="/login"
+                  className={cn(
+                    "inline-flex items-center justify-center min-h-[44px] px-5 rounded-lg",
+                    "text-sm font-semibold font-body tracking-wide transition-all duration-150",
+                    "border border-border text-fg-secondary",
+                    "hover:border-green hover:text-green hover:bg-[rgba(0,224,90,0.06)]",
+                  )}
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/register"
+                  className={cn(
+                    "inline-flex items-center justify-center min-h-[44px] px-5 rounded-lg",
+                    "text-sm font-bold font-body tracking-wide transition-all duration-150",
+                    "bg-green text-bg-base",
+                    "hover:bg-green-electric",
+                    "shadow-[0_0_16px_rgba(0,224,90,0.28)] hover:shadow-[0_0_24px_rgba(0,224,90,0.42)]",
+                  )}
+                >
+                  Join Now
+                </Link>
+              </>
+            )}
           </div>
 
           {/* ── Mobile toggle ────────────────────────────── */}
@@ -146,35 +261,55 @@ export function Navbar() {
           </nav>
 
           <div className="mt-4 flex flex-col gap-2">
-            <Link
-              href="/login"
-              onClick={() => setMobileOpen(false)}
-              className={cn(
-                "flex items-center justify-center min-h-[44px] rounded-lg w-full",
-                "text-sm font-semibold font-body tracking-wide transition-all duration-150",
-                "border border-border text-fg-secondary",
-                "hover:border-green hover:text-green",
-              )}
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/register"
-              onClick={() => setMobileOpen(false)}
-              className={cn(
-                "flex items-center justify-center min-h-[44px] rounded-lg w-full",
-                "text-sm font-bold font-body tracking-wide transition-all duration-150",
-                "bg-green text-bg-base",
-                "hover:bg-green-electric",
-                "shadow-[0_0_16px_rgba(0,224,90,0.28)]",
-              )}
-            >
-              Join Now
-            </Link>
+            {user ? (
+              <>
+                <Link
+                  href="/profile"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-2 min-h-[44px] px-4 rounded-lg border border-border text-fg-secondary font-body text-sm font-semibold hover:border-green hover:text-green transition-all"
+                >
+                  <User size={15} aria-hidden="true" />
+                  My Profile
+                </Link>
+                <button
+                  onClick={handleSignOut}
+                  className="flex items-center justify-center gap-2 min-h-[44px] rounded-lg border border-[rgba(255,59,48,0.3)] text-error font-body text-sm font-semibold hover:bg-[rgba(255,59,48,0.07)] transition-all"
+                >
+                  <LogOut size={15} aria-hidden="true" />
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  onClick={() => setMobileOpen(false)}
+                  className={cn(
+                    "flex items-center justify-center min-h-[44px] rounded-lg w-full",
+                    "text-sm font-semibold font-body tracking-wide transition-all duration-150",
+                    "border border-border text-fg-secondary",
+                    "hover:border-green hover:text-green",
+                  )}
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/register"
+                  onClick={() => setMobileOpen(false)}
+                  className={cn(
+                    "flex items-center justify-center min-h-[44px] rounded-lg w-full",
+                    "text-sm font-bold font-body tracking-wide transition-all duration-150",
+                    "bg-green text-bg-base hover:bg-green-electric",
+                    "shadow-[0_0_16px_rgba(0,224,90,0.28)]",
+                  )}
+                >
+                  Join Now
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}
     </header>
   );
 }
-

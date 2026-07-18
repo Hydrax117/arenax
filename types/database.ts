@@ -220,20 +220,25 @@ export interface PushSubscriptionJSON {
 }
 
 // ── Supabase Database type map (used by createClient<Database>()) ─────────────
+// Note: Using Record<string, unknown> for Insert/Update to avoid inference issues
+// with the Supabase JS client v2 generic system. Row types are fully typed.
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyRecord = Record<string, any>;
 
 export type Database = {
   public: {
     Tables: {
-      profiles:            { Row: Profile;            Insert: Partial<Profile> & Pick<Profile, "id" | "gamertag" | "efootball_username">; Update: Partial<Profile> };
-      otp_codes:           { Row: OtpCode;            Insert: Omit<OtpCode, "id" | "created_at">;           Update: Partial<OtpCode> };
-      waitlist:            { Row: WaitlistEntry;      Insert: { email: string; name?: string | null; notified?: boolean };      Update: Partial<WaitlistEntry> };
-      tournaments:         { Row: Tournament;         Insert: Omit<Tournament, "id" | "created_at" | "updated_at">; Update: Partial<Tournament> };
-      registrations:       { Row: Registration;       Insert: Omit<Registration, "id" | "created_at">;      Update: Partial<Registration> };
-      matches:             { Row: Match;              Insert: Omit<Match, "id" | "created_at" | "updated_at">; Update: Partial<Match> };
-      result_submissions:  { Row: ResultSubmission;   Insert: Omit<ResultSubmission, "id" | "submitted_at">; Update: Partial<ResultSubmission> };
-      league_standings:    { Row: LeagueStanding;     Insert: Omit<LeagueStanding, "id" | "updated_at">;    Update: Partial<LeagueStanding> };
-      payouts:             { Row: Payout;             Insert: Omit<Payout, "id" | "created_at">;            Update: Partial<Payout> };
-      push_notifications:  { Row: PushNotification;   Insert: Omit<PushNotification, "id" | "created_at">; Update: Partial<PushNotification> };
+      profiles:            { Row: Profile;            Insert: AnyRecord; Update: AnyRecord };
+      otp_codes:           { Row: OtpCode;            Insert: AnyRecord; Update: AnyRecord };
+      waitlist:            { Row: WaitlistEntry;      Insert: AnyRecord; Update: AnyRecord };
+      tournaments:         { Row: Tournament;         Insert: AnyRecord; Update: AnyRecord };
+      registrations:       { Row: Registration;       Insert: AnyRecord; Update: AnyRecord };
+      matches:             { Row: Match;              Insert: AnyRecord; Update: AnyRecord };
+      result_submissions:  { Row: ResultSubmission;   Insert: AnyRecord; Update: AnyRecord };
+      league_standings:    { Row: LeagueStanding;     Insert: AnyRecord; Update: AnyRecord };
+      payouts:             { Row: Payout;             Insert: AnyRecord; Update: AnyRecord };
+      push_notifications:  { Row: PushNotification;   Insert: AnyRecord; Update: AnyRecord };
     };
     Views: {
       league_table:           { Row: LeagueTableRow };

@@ -48,7 +48,7 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // ── Protected player routes ──────────────────────────────────────────────
-  const playerRoutes = ["/dashboard", "/profile"];
+  const playerRoutes = ["/dashboard", "/profile", "/onboarding"];
   if (playerRoutes.some((r) => pathname.startsWith(r)) && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
