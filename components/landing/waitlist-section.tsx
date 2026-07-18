@@ -1,5 +1,7 @@
 import { WaitlistForm } from "./waitlist-form";
 import { Bell, Users, Zap } from "lucide-react";
+import fs from "fs";
+import path from "path";
 
 const PERKS = [
   {
@@ -19,7 +21,22 @@ const PERKS = [
   },
 ];
 
+/* ── Server-only helper — runs at request/build time, no client JS ──────── */
+function getWaitlistCount(): number {
+  try {
+    const file = path.join(process.cwd(), "data", "waitlist.json");
+    if (!fs.existsSync(file)) return 0;
+    const data = JSON.parse(fs.readFileSync(file, "utf-8")) as unknown[];
+    return Array.isArray(data) ? data.length : 0;
+  } catch {
+    return 0;
+  }
+}
+
+/* ── Root section (plain Server Component — NOT async) ───────────────────── */
 export function WaitlistSection() {
+  const count = getWaitlistCount();
+
   return (
     <section
       className="py-20 px-4 sm:px-6 lg:px-8 bg-bg-dark"
@@ -84,7 +101,7 @@ export function WaitlistSection() {
 
           {/* ── Right — form card ────────────────────────────────────────── */}
           <div className="relative">
-            {/* Ambient glow behind card */}
+            {/* Ambient glow */}
             <div
               className="absolute -inset-4 rounded-3xl pointer-events-none blur-2xl opacity-30"
               style={{
@@ -105,12 +122,12 @@ export function WaitlistSection() {
                 </p>
               </div>
 
-              {/* Live counter */}
-              <WaitlistCounter />
+              {/* Live counter — rendered on server, no client JS */}
+              <WaitlistCounter count={count} />
 
               <div className="neon-divider my-5" aria-hidden="true" />
 
-              {/* Form */}
+              {/* Form — client component for interactivity */}
               <WaitlistForm />
             </div>
           </div>
@@ -121,48 +138,26 @@ export function WaitlistSection() {
   );
 }
 
-/**
- * Server component that fetches the current waitlist count.
- * Rendered at build time (static) — shows a real number without client JS.
- */
-async function WaitlistCounter() {
-  let count = 0;
-
-  try {
-    // Direct file read on the server — no HTTP round-trip needed
-    const { default: fs } = await import("fs");
-    const { default: path } = await import("path");
-    const file = path.join(process.cwd(), "data", "waitlist.json");
-    if (fs.existsSync(file)) {
-      const data = JSON.parse(fs.readFileSync(file, "utf-8")) as unknown[];
-      count = data.length;
-    }
-  } catch {
-    // File doesn't exist yet — count stays 0
-  }
-
+/* ── Counter display (plain Server Component, receives count as prop) ────── */
+function WaitlistCounter({ count }: { count: number }) {
   return (
     <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-bg-surface border border-border">
       <div className="flex -space-x-2" aria-hidden="true">
-        {[
-          "bg-green",
-          "bg-[#7b22d4]",
-          "bg-[rgba(0,208,255,0.8)]",
-        ].map((bg, i) => (
-          <div
-            key={i}
-            className={`w-7 h-7 rounded-full border-2 border-bg-surface ${bg} flex items-center justify-center`}
-          />
-        ))}
+        {["bg-green", "bg-[#7b22d4]", "bg-[rgba(0,208,255,0.8)]"].map(
+          (bg, i) => (
+            <div
+              key={i}
+              className={`w-7 h-7 rounded-full border-2 border-bg-surface ${bg}`}
+            />
+          ),
+        )}
       </div>
-      <div>
-        <p className="font-body text-xs text-fg-muted">
-          <span className="font-semibold text-fg-primary">
-            {count > 0 ? `${count.toLocaleString()}+` : "Be the first"}
-          </span>{" "}
-          {count > 0 ? "players already waiting" : "to join the waitlist"}
-        </p>
-      </div>
+      <p className="font-body text-xs text-fg-muted">
+        <span className="font-semibold text-fg-primary">
+          {count > 0 ? `${count.toLocaleString()}+` : "Be the first"}
+        </span>{" "}
+        {count > 0 ? "players already waiting" : "to join the waitlist"}
+      </p>
     </div>
   );
 }
