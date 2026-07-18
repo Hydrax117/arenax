@@ -35,8 +35,8 @@ export type NotificationEvent =
 
 export interface Profile {
   id: string;
-  gamertag: string;
-  efootball_username: string;
+  gamertag: string | null;           // null until onboarding complete
+  efootball_username: string | null; // null until onboarding complete
   phone: string | null;
   nigerian_state: string | null;
   avatar_url: string | null;

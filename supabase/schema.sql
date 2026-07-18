@@ -32,24 +32,22 @@ create type notification_event as enum (
 
 create table profiles (
   id                  uuid primary key references auth.users(id) on delete cascade,
-  gamertag            text not null unique,
-  efootball_username  text not null,
-  phone               text unique,           -- Nigerian format, e.g. 08012345678
+  gamertag            text unique,               -- nullable until onboarding is complete
+  efootball_username  text,                      -- nullable until onboarding is complete
+  phone               text unique,
   nigerian_state      text,
   avatar_url          text,
   role                text not null default 'player' check (role in ('player', 'admin')),
   status              player_status not null default 'active',
-  -- Bank details for Paystack payouts
   bank_account_number text,
   bank_name           text,
-  -- Push notification subscription (VAPID Web Push)
   push_subscription   jsonb,
   push_enabled        boolean not null default true,
-  -- Timestamps
   created_at          timestamptz not null default now(),
   updated_at          timestamptz not null default now(),
 
-  constraint gamertag_format check (gamertag ~ '^[a-zA-Z0-9_]{3,20}$')
+  -- Only enforce gamertag format when it's actually set (post-onboarding)
+  constraint gamertag_format check (gamertag is null or gamertag ~ '^[a-zA-Z0-9_]{3,20}$')
 );
 
 -- ───────────────────────────────────────────────────────────────────────────
@@ -306,17 +304,13 @@ create trigger trg_matches_updated_at
   before update on matches
   for each row execute function set_updated_at();
 
--- Auto-create profile when a new auth user is created
+-- Auto-create profile stub when a new auth user is created.
+-- Gamertag and efootball_username are filled during onboarding.
 create or replace function handle_new_user()
 returns trigger language plpgsql security definer as $$
 begin
   insert into profiles (id, gamertag, efootball_username, phone)
-  values (
-    new.id,
-    coalesce(new.raw_user_meta_data->>'gamertag', 'player_' || substr(new.id::text, 1, 8)),
-    coalesce(new.raw_user_meta_data->>'efootball_username', ''),
-    new.phone
-  )
+  values (new.id, null, null, new.phone)
   on conflict (id) do nothing;
   return new;
 end;
