@@ -11,8 +11,11 @@ type Status = "idle" | "loading" | "resending" | "error" | "success";
 interface VerifyResponse {
   success: boolean;
   message?: string;
+  reason?: string;
   needsOnboarding?: boolean;
-  session?: { access_token: string; refresh_token: string };
+  email?: string;
+  token?: string;
+  tokenType?: "magiclink";
 }
 
 const CODE_LENGTH = 6;
@@ -79,25 +82,26 @@ export function VerifyForm() {
       const res = await fetch("/api/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, token: submittedCode }),
+        body: JSON.stringify({ email, code: submittedCode }),
       });
 
       const data = (await res.json()) as VerifyResponse;
 
-      if (!data.success || !data.session) {
+      if (!data.success || !data.token) {
         setStatus("error");
         setErrorMsg(data.message ?? "Verification failed.");
-        // Clear digits so user can re-enter
-        setDigits(Array(CODE_LENGTH).fill(""));
-        inputRefs.current[0]?.focus();
+        if (data.reason === "max_attempts" || data.reason === "expired") {
+          setDigits(Array(CODE_LENGTH).fill(""));
+          inputRefs.current[0]?.focus();
+        }
         return;
       }
 
-      // Set the session in the browser Supabase client
+      // Exchange the hashed token for a browser session
       const supabase = createBrowserClient();
-      const { error: sessionError } = await supabase.auth.setSession({
-        access_token: data.session.access_token,
-        refresh_token: data.session.refresh_token,
+      const { error: sessionError } = await supabase.auth.verifyOtp({
+        token_hash: data.token,
+        type: "magiclink",
       });
 
       if (sessionError) {

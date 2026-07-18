@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { createClient } from "@supabase/supabase-js";
+import { storeOtp } from "@/lib/otp";
+import { sendOtpEmail } from "@/lib/email";
 
 const schema = z.object({
   email: z
@@ -10,7 +11,7 @@ const schema = z.object({
     .toLowerCase(),
 });
 
-// Loose in-memory rate limit (60s per email)
+// In-memory rate limit (60s cooldown per email)
 const lastSent = new Map<string, number>();
 const COOLDOWN_MS = 60_000;
 
@@ -38,27 +39,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Use Supabase's native email OTP — no custom email sending needed
-    // Supabase sends a 6-digit OTP to the user's inbox
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    );
-
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        shouldCreateUser: true,
-      },
-    });
-
-    if (error) {
-      console.error("[send-otp] Supabase error:", error.message);
-      return NextResponse.json(
-        { success: false, message: "Failed to send code. Please try again." },
-        { status: 500 },
-      );
-    }
+    // Generate OTP, store in DB, send via Resend
+    const code = await storeOtp(email);
+    await sendOtpEmail(email, code);
 
     lastSent.set(email, Date.now());
 
