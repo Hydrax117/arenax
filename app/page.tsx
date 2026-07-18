@@ -2,6 +2,7 @@ import { HeroSection } from "@/components/landing/hero-section";
 import { FeaturedTournaments } from "@/components/landing/featured-tournaments";
 import { HowItWorks } from "@/components/landing/how-it-works";
 import { StatsStrip } from "@/components/landing/stats-strip";
+import { WaitlistSection } from "@/components/landing/waitlist-section";
 import { CtaBanner } from "@/components/landing/cta-banner";
 
 export default function HomePage() {
@@ -11,6 +12,7 @@ export default function HomePage() {
       <StatsStrip />
       <FeaturedTournaments />
       <HowItWorks />
+      <WaitlistSection />
       <CtaBanner />
     </>
   );

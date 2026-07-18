@@ -47,3 +47,6 @@ next-env.d.ts
 /public/workbox-*.js.map
 /public/swe-worker-*.js
 /public/fallback-*.js
+
+# Waitlist data (contains PII — swap for Supabase in production)
+/data/waitlist.json
