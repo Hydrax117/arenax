@@ -13,7 +13,10 @@ interface VerifyResponse {
   message?: string;
   reason?: string;
   needsOnboarding?: boolean;
-  session?: { access_token: string; refresh_token: string };
+  userId?: string;
+  email?: string;
+  token?: string;
+  tokenType?: "magiclink";
 }
 
 const CODE_LENGTH = 6;
@@ -85,7 +88,7 @@ export function VerifyForm() {
 
       const data = (await res.json()) as VerifyResponse;
 
-      if (!data.success || !data.session) {
+      if (!data.success || !data.token) {
         setStatus("error");
         setErrorMsg(data.message ?? "Verification failed.");
         if (data.reason === "max_attempts" || data.reason === "expired") {
@@ -95,12 +98,18 @@ export function VerifyForm() {
         return;
       }
 
-      // Set the session in the browser Supabase client
+      // Exchange the server-generated token for a real browser session
       const supabase = createBrowserClient();
-      await supabase.auth.setSession({
-        access_token: data.session.access_token,
-        refresh_token: data.session.refresh_token,
+      const { error: sessionError } = await supabase.auth.verifyOtp({
+        token_hash: data.token,
+        type: "magiclink",
       });
+
+      if (sessionError) {
+        setStatus("error");
+        setErrorMsg("Failed to establish session. Please try again.");
+        return;
+      }
 
       setStatus("success");
 
@@ -109,6 +118,7 @@ export function VerifyForm() {
         router.push(`/onboarding?redirect=${encodeURIComponent(redirect)}`);
       } else {
         router.push(redirect);
+        router.refresh(); // force server component re-render with new session
       }
     } catch {
       setStatus("error");
