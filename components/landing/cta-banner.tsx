@@ -14,12 +14,12 @@ export function CtaBanner() {
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(135deg, rgba(0,255,102,0.12) 0%, rgba(138,43,226,0.08) 50%, rgba(10,10,10,0) 100%)",
+                "linear-gradient(135deg, rgba(0,224,90,0.08) 0%, rgba(138,43,226,0.08) 50%, rgba(10,10,10,0) 100%)",
             }}
             aria-hidden="true"
           />
           <div
-            className="absolute inset-0 border border-[rgba(0,255,102,0.2)] rounded-2xl"
+            className="absolute inset-0 border border-[rgba(0,224,90,0.15)] rounded-2xl"
             aria-hidden="true"
           />
 
@@ -28,7 +28,7 @@ export function CtaBanner() {
             className="absolute top-0 left-0 w-64 h-64 rounded-full pointer-events-none"
             style={{
               background:
-                "radial-gradient(circle, rgba(0,255,102,0.12) 0%, transparent 70%)",
+                "radial-gradient(circle, rgba(0,224,90,0.08) 0%, transparent 70%)",
             }}
             aria-hidden="true"
           />
@@ -44,7 +44,7 @@ export function CtaBanner() {
           <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8 p-8 sm:p-12">
             {/* Left — text */}
             <div className="text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full border border-[rgba(0,255,102,0.2)] bg-[rgba(0,255,102,0.06)]">
+              <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full border border-[rgba(0,224,90,0.15)] bg-[rgba(0,224,90,0.05)]">
                 <Timer size={12} className="text-green" aria-hidden="true" />
                 <span className="font-body text-xs text-green font-semibold tracking-widest uppercase">
                   Next tournament starts soon
@@ -102,7 +102,7 @@ export function CtaBanner() {
 
               <Link
                 href="/register"
-                className="inline-flex items-center justify-center gap-2 min-h-[52px] px-10 rounded-lg font-body font-bold text-base tracking-wide bg-green text-bg-base hover:bg-green-electric transition-all duration-150 shadow-[0_0_24px_rgba(0,255,102,0.4)] hover:shadow-[0_0_40px_rgba(0,255,102,0.6)] w-full"
+                className="inline-flex items-center justify-center gap-2 min-h-[52px] px-10 rounded-lg font-body font-bold text-base tracking-wide bg-green text-bg-base hover:bg-green-electric transition-all duration-150 shadow-[0_0_24px_rgba(0,224,90,0.28)] hover:shadow-[0_0_40px_rgba(0,224,90,0.42)] w-full"
               >
                 Create Account
                 <ArrowRight size={18} aria-hidden="true" />
@@ -114,3 +114,4 @@ export function CtaBanner() {
     </section>
   );
 }
+

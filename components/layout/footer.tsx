@@ -66,7 +66,7 @@ export function Footer() {
           </nav>
         </div>
 
-        <p className="text-center text-xs text-fg-muted font-body mt-6">
+        <p className="text-center text-xs text-fg-muted font-body mt-6" suppressHydrationWarning>
           © {new Date().getFullYear()} ArenaX. All rights reserved.
         </p>
       </div>

@@ -21,7 +21,7 @@ export function StatsStrip() {
               className="flex flex-col items-center gap-2 md:px-8 text-center"
             >
               <div
-                className="flex items-center justify-center w-10 h-10 rounded-lg bg-[rgba(0,255,102,0.08)] border border-[rgba(0,255,102,0.15)]"
+                className="flex items-center justify-center w-10 h-10 rounded-lg bg-[rgba(0,224,90,0.06)] border border-[rgba(0,224,90,0.10)]"
                 aria-hidden="true"
               >
                 <Icon size={18} className="text-green" />
@@ -39,3 +39,4 @@ export function StatsStrip() {
     </section>
   );
 }
+

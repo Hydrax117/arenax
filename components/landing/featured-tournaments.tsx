@@ -146,7 +146,7 @@ function TournamentCard({ tournament: t }: { tournament: Tournament }) {
           className="absolute inset-0 opacity-10"
           style={{
             backgroundImage:
-              "linear-gradient(rgba(0,255,102,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,102,0.4) 1px, transparent 1px)",
+              "linear-gradient(rgba(0,224,90,0.28) 1px, transparent 1px), linear-gradient(90deg, rgba(0,224,90,0.28) 1px, transparent 1px)",
             backgroundSize: "20px 20px",
           }}
           aria-hidden="true"
@@ -244,3 +244,4 @@ function TournamentCard({ tournament: t }: { tournament: Tournament }) {
     </Link>
   );
 }
+

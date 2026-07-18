@@ -14,25 +14,25 @@ export interface ButtonProps
 }
 
 const variantClasses: Record<NonNullable<ButtonProps["variant"]>, string> = {
-  // ── Primary — neon green fill (design: "Primary Button") ──
+  // ── Primary — neon green fill ──
   primary: [
     "bg-green text-bg-base font-semibold",
     "hover:bg-green-electric active:scale-[0.97]",
-    "shadow-[0_0_16px_rgba(0,255,102,0.4)]",
-    "hover:shadow-[0_0_28px_rgba(0,255,102,0.6)]",
+    "shadow-[0_0_12px_rgba(0,224,90,0.28)]",
+    "hover:shadow-[0_0_20px_rgba(0,224,90,0.42)]",
     "transition-all",
   ].join(" "),
 
-  // ── Outline — green border (design: "Hover State" / secondary CTA) ──
+  // ── Outline — green border ──
   outline: [
     "border border-green text-green bg-transparent",
-    "hover:bg-[rgba(0,255,102,0.08)] active:scale-[0.97]",
-    "shadow-[0_0_8px_rgba(0,255,102,0.15)]",
-    "hover:shadow-[0_0_16px_rgba(0,255,102,0.3)]",
+    "hover:bg-[rgba(0,224,90,0.07)] active:scale-[0.97]",
+    "shadow-[0_0_6px_rgba(0,224,90,0.12)]",
+    "hover:shadow-[0_0_14px_rgba(0,224,90,0.24)]",
     "transition-all",
   ].join(" "),
 
-  // ── Ghost — no border (design: "Ghost Button") ──
+  // ── Ghost ──
   ghost: [
     "text-fg-secondary bg-transparent border border-border",
     "hover:text-fg-primary hover:border-border-light active:scale-[0.97]",
@@ -46,12 +46,12 @@ const variantClasses: Record<NonNullable<ButtonProps["variant"]>, string> = {
     "transition-all",
   ].join(" "),
 
-  // ── Gaming gradient — primary + purple (design: "Gaming Gradient") ──
+  // ── Gaming gradient ──
   gaming: [
     "text-white font-semibold",
-    "bg-[linear-gradient(135deg,#00ff66_0%,#8a2be2_100%)]",
-    "hover:brightness-110 active:scale-[0.97]",
-    "shadow-[0_0_20px_rgba(0,255,102,0.3)]",
+    "bg-[linear-gradient(135deg,#00e05a_0%,#7b22d4_100%)]",
+    "hover:brightness-105 active:scale-[0.97]",
+    "shadow-[0_0_14px_rgba(0,224,90,0.22)]",
     "transition-all",
   ].join(" "),
 };

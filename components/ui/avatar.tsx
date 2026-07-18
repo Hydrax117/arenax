@@ -29,7 +29,7 @@ export function Avatar({ src, alt, size = "md", className }: AvatarProps) {
     <div
       className={cn(
         "relative inline-flex shrink-0 items-center justify-center rounded-full overflow-hidden",
-        "border border-[rgba(0,255,102,0.25)] bg-bg-surface",
+        "border border-[rgba(0,224,90,0.18)] bg-bg-surface",
         "font-heading font-bold text-green",
         sizeClass,
         className,
@@ -49,3 +49,4 @@ export function Avatar({ src, alt, size = "md", className }: AvatarProps) {
     </div>
   );
 }
+

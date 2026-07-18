@@ -15,7 +15,7 @@ export function HeroSection() {
         className="absolute -top-40 -left-40 w-[700px] h-[700px] rounded-full pointer-events-none"
         style={{
           background:
-            "radial-gradient(circle, rgba(0,255,102,0.08) 0%, transparent 70%)",
+            "radial-gradient(circle, rgba(0,224,90,0.06) 0%, transparent 70%)",
         }}
         aria-hidden="true"
       />
@@ -35,7 +35,7 @@ export function HeroSection() {
         className="absolute inset-0 opacity-[0.03] pointer-events-none"
         style={{
           backgroundImage:
-            "radial-gradient(circle, #00ff66 1px, transparent 1px)",
+            "radial-gradient(circle, #00e05a 1px, transparent 1px)",
           backgroundSize: "40px 40px",
         }}
         aria-hidden="true"
@@ -48,7 +48,7 @@ export function HeroSection() {
           {/* Left — text */}
           <div className="flex-1 text-center lg:text-left max-w-2xl">
             {/* Eyebrow */}
-            <div className="inline-flex items-center gap-2 mb-6 px-3 py-1.5 rounded-full border border-[rgba(0,255,102,0.25)] bg-[rgba(0,255,102,0.06)]">
+            <div className="inline-flex items-center gap-2 mb-6 px-3 py-1.5 rounded-full border border-[rgba(0,224,90,0.18)] bg-[rgba(0,224,90,0.05)]">
               <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse" aria-hidden="true" />
               <span className="text-green text-xs font-semibold font-body tracking-widest uppercase">
                 Nigeria&apos;s #1 eFootball Arena
@@ -76,7 +76,7 @@ export function HeroSection() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Link
                 href="/tournaments"
-                className="inline-flex items-center justify-center gap-2 min-h-[52px] px-8 rounded-lg font-body font-bold text-base tracking-wide bg-green text-bg-base hover:bg-green-electric transition-all duration-150 shadow-[0_0_24px_rgba(0,255,102,0.4)] hover:shadow-[0_0_36px_rgba(0,255,102,0.6)]"
+                className="inline-flex items-center justify-center gap-2 min-h-[52px] px-8 rounded-lg font-body font-bold text-base tracking-wide bg-green text-bg-base hover:bg-green-electric transition-all duration-150 shadow-[0_0_24px_rgba(0,224,90,0.28)] hover:shadow-[0_0_36px_rgba(0,224,90,0.42)]"
               >
                 Explore Events
                 <ArrowRight size={18} aria-hidden="true" />
@@ -155,7 +155,7 @@ function HeroCard() {
             className="absolute inset-0 opacity-20"
             style={{
               backgroundImage:
-                "linear-gradient(rgba(0,255,102,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,102,0.3) 1px, transparent 1px)",
+                "linear-gradient(rgba(0,224,90,0.22) 1px, transparent 1px), linear-gradient(90deg, rgba(0,224,90,0.22) 1px, transparent 1px)",
               backgroundSize: "30px 30px",
             }}
             aria-hidden="true"
@@ -219,7 +219,7 @@ function HeroCard() {
           {/* CTA */}
           <Link
             href="/tournaments"
-            className="mt-4 flex items-center justify-center gap-2 min-h-[44px] w-full rounded-lg bg-green text-bg-base font-body font-bold text-sm tracking-wide hover:bg-green-electric transition-all duration-150 shadow-[0_0_16px_rgba(0,255,102,0.3)]"
+            className="mt-4 flex items-center justify-center gap-2 min-h-[44px] w-full rounded-lg bg-green text-bg-base font-body font-bold text-sm tracking-wide hover:bg-green-electric transition-all duration-150 shadow-[0_0_16px_rgba(0,224,90,0.22)]"
           >
             Register Now
             <ArrowRight size={15} aria-hidden="true" />
@@ -229,7 +229,7 @@ function HeroCard() {
 
       {/* Floating "NEXT LEVEL" badge */}
       <div
-        className="absolute -top-4 -right-4 bg-bg-dark border border-green rounded-lg px-3 py-2 shadow-[0_0_16px_rgba(0,255,102,0.3)]"
+        className="absolute -top-4 -right-4 bg-bg-dark border border-green rounded-lg px-3 py-2 shadow-[0_0_16px_rgba(0,224,90,0.22)]"
         aria-hidden="true"
       >
         <p className="font-heading font-black text-xs text-green tracking-widest">NEXT LEVEL</p>
@@ -238,3 +238,4 @@ function HeroCard() {
     </div>
   );
 }
+

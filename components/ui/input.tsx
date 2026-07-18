@@ -52,7 +52,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               "font-body transition-all duration-150",
               // Focused state — green border + glow (matches design exactly)
               "focus:outline-none focus:border-green",
-              "focus:shadow-[0_0_0_3px_rgba(0,255,102,0.15),0_0_12px_rgba(0,255,102,0.2)]",
+              "focus:shadow-[0_0_0_3px_rgba(0,224,90,0.10),0_0_12px_rgba(0,224,90,0.15)]",
               // Error state
               error &&
                 "border-error focus:border-error focus:shadow-[0_0_0_3px_rgba(255,59,48,0.15)]",
@@ -101,3 +101,4 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
 );
 
 Input.displayName = "Input";
+

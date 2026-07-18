@@ -19,24 +19,15 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 }
 
 const variantClasses: Record<NonNullable<BadgeProps["variant"]>, string> = {
-  // ── Design spec badges ──────────────────────────────────────────────────
-  new: "bg-[rgba(0,255,102,0.12)] text-green border-[rgba(0,255,102,0.35)]",
-  featured:
-    "bg-[rgba(0,208,255,0.12)] text-info border-[rgba(0,208,255,0.35)]",
-  soldout:
-    "bg-[rgba(255,59,48,0.12)] text-error border-[rgba(255,59,48,0.35)]",
-  vip: "bg-[rgba(138,43,226,0.15)] text-purple border-[rgba(138,43,226,0.4)]",
-
-  // ── Semantic ─────────────────────────────────────────────────────────────
-  success:
-    "bg-[rgba(0,255,102,0.12)] text-green border-[rgba(0,255,102,0.3)]",
-  warning:
-    "bg-[rgba(255,184,0,0.12)] text-warning border-[rgba(255,184,0,0.3)]",
-  error:
-    "bg-[rgba(255,59,48,0.12)] text-error border-[rgba(255,59,48,0.3)]",
-  info: "bg-[rgba(0,208,255,0.12)] text-info border-[rgba(0,208,255,0.3)]",
-  neutral:
-    "bg-[rgba(255,255,255,0.06)] text-fg-secondary border-[rgba(255,255,255,0.1)]",
+  new:      "bg-[rgba(0,224,90,0.10)] text-green border-[rgba(0,224,90,0.28)]",
+  featured: "bg-[rgba(0,208,255,0.10)] text-info border-[rgba(0,208,255,0.28)]",
+  soldout:  "bg-[rgba(255,59,48,0.10)] text-error border-[rgba(255,59,48,0.28)]",
+  vip:      "bg-[rgba(123,34,212,0.12)] text-purple border-[rgba(123,34,212,0.32)]",
+  success:  "bg-[rgba(0,224,90,0.10)] text-green border-[rgba(0,224,90,0.25)]",
+  warning:  "bg-[rgba(255,184,0,0.10)] text-warning border-[rgba(255,184,0,0.25)]",
+  error:    "bg-[rgba(255,59,48,0.10)] text-error border-[rgba(255,59,48,0.25)]",
+  info:     "bg-[rgba(0,208,255,0.10)] text-info border-[rgba(0,208,255,0.25)]",
+  neutral:  "bg-[rgba(255,255,255,0.05)] text-fg-secondary border-[rgba(255,255,255,0.08)]",
 };
 
 export function Badge({
