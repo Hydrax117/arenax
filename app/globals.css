@@ -1,87 +1,116 @@
 @import "tailwindcss";
 
-/* ─────────────────────────────────────────────
-   ArenaX Design Tokens
-   ───────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   ArenaX Design System — Futuristic. Energetic. Bold.
+   Built for gamers. Made for champions.
+   ═══════════════════════════════════════════════════════════════ */
+
 :root {
-  /* Backgrounds */
-  --background: #0a0a0f;
-  --background-secondary: #0f0f1a;
-  --background-card: rgba(15, 15, 26, 0.6);
+  /* ── Backgrounds ─────────────────────────────────────────── */
+  --bg-base: #0a0a0a;        /* Rich Black */
+  --bg-dark: #111317;        /* Dark */
+  --bg-surface: #1a1f24;     /* Surface — card backgrounds */
+  --bg-surface-hover: #1e2429;
 
-  /* Foregrounds */
-  --foreground: #e8e8f0;
-  --foreground-muted: #8888aa;
+  /* ── Borders ─────────────────────────────────────────────── */
+  --border: #2a3f36;         /* Default border — subtle green tint */
+  --border-light: #6e6e6a;   /* Light border */
 
-  /* Accent – electric cyan */
-  --cyan: #00d4ff;
-  --cyan-dim: rgba(0, 212, 255, 0.15);
-  --cyan-glow: rgba(0, 212, 255, 0.4);
+  /* ── Foregrounds ─────────────────────────────────────────── */
+  --fg-primary: #ffffff;     /* White */
+  --fg-secondary: #b3b3b1;   /* Light grey */
+  --fg-muted: #687280;       /* Muted text */
 
-  /* Accent – deep purple */
-  --purple: #7b00ff;
-  --purple-dim: rgba(123, 0, 255, 0.15);
-  --purple-glow: rgba(123, 0, 255, 0.4);
+  /* ── Primary — Neon Green ────────────────────────────────── */
+  --green: #00ff66;           /* Neon Green — primary CTA */
+  --green-electric: #00cc4d;  /* Electric Green — hover / active */
+  --green-lime: #39ff14;      /* Lime — accent highlight */
+  --green-dim: rgba(0, 255, 102, 0.12);
+  --green-glow: rgba(0, 255, 102, 0.35);
+  --green-glow-strong: rgba(0, 255, 102, 0.55);
 
-  /* Semantic */
-  --success: #00ff88;
-  --warning: #ffaa00;
-  --error: #ff3366;
+  /* ── Semantic ────────────────────────────────────────────── */
+  --success: #00ff66;
+  --warning: #ffb800;
+  --error: #ff3b30;
+  --info: #00d0ff;
+  --purple: #8a2be2;
 
-  /* Glass morphism */
-  --glass-bg: rgba(15, 15, 26, 0.6);
-  --glass-border: rgba(0, 212, 255, 0.12);
+  /* ── Gradients ───────────────────────────────────────────── */
+  --gradient-primary: linear-gradient(135deg, #00ff66 0%, #00cc4d 100%);
+  --gradient-dark: linear-gradient(135deg, #0a0a0a 0%, #1a1f24 100%);
+  --gradient-accent: linear-gradient(135deg, #00ff66 0%, #39ff14 100%);
+  --gradient-gaming: linear-gradient(135deg, #00ff66 0%, #8a2be2 100%);
+  --gradient-hero: linear-gradient(
+    135deg,
+    rgba(0, 255, 102, 0.15) 0%,
+    rgba(10, 10, 10, 0) 60%
+  );
+
+  /* ── Glass morphism ──────────────────────────────────────── */
+  --glass-bg: rgba(26, 31, 36, 0.75);
+  --glass-border: rgba(0, 255, 102, 0.12);
   --glass-blur: 12px;
 
-  /* Typography */
+  /* ── Typography ──────────────────────────────────────────── */
   --font-heading: var(--font-orbitron), "Orbitron", sans-serif;
-  --font-body: var(--font-rajdhani), "Rajdhani", sans-serif;
+  --font-body: var(--font-exo2), "Exo 2", sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
 
-  /* Transitions */
-  --transition-fast: 150ms ease;
-  --transition-base: 300ms ease;
+  /* ── Spacing / Shape ─────────────────────────────────────── */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
 
-  /* Touch targets */
-  --touch-min: 44px;
-
-  /* Borders */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
+  /* ── Transitions ─────────────────────────────────────────── */
+  --transition-fast: 120ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
 }
 
-/* ─────────────────────────────────────────────
-   Tailwind v4 theme extension
-   ───────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   Tailwind v4 — expose tokens as utilities
+   ═══════════════════════════════════════════════════════════════ */
 @theme inline {
-  /* Map CSS vars into Tailwind utilities */
-  --color-background: var(--background);
-  --color-background-secondary: var(--background-secondary);
-  --color-background-card: var(--background-card);
-  --color-foreground: var(--foreground);
-  --color-foreground-muted: var(--foreground-muted);
+  /* Backgrounds */
+  --color-bg-base: var(--bg-base);
+  --color-bg-dark: var(--bg-dark);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-surface-hover: var(--bg-surface-hover);
 
-  --color-cyan: var(--cyan);
-  --color-cyan-dim: var(--cyan-dim);
-  --color-cyan-glow: var(--cyan-glow);
+  /* Borders */
+  --color-border: var(--border);
+  --color-border-light: var(--border-light);
 
-  --color-purple: var(--purple);
-  --color-purple-dim: var(--purple-dim);
-  --color-purple-glow: var(--purple-glow);
+  /* Foreground */
+  --color-fg-primary: var(--fg-primary);
+  --color-fg-secondary: var(--fg-secondary);
+  --color-fg-muted: var(--fg-muted);
 
+  /* Brand green */
+  --color-green: var(--green);
+  --color-green-electric: var(--green-electric);
+  --color-green-lime: var(--green-lime);
+  --color-green-dim: var(--green-dim);
+  --color-green-glow: var(--green-glow);
+
+  /* Semantic */
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-error: var(--error);
+  --color-info: var(--info);
+  --color-purple: var(--purple);
 
+  /* Fonts */
   --font-heading: var(--font-heading);
   --font-body: var(--font-body);
   --font-mono: var(--font-mono);
 }
 
-/* ─────────────────────────────────────────────
-   Base reset & global styles
-   ───────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   Base reset
+   ═══════════════════════════════════════════════════════════════ */
 *,
 *::before,
 *::after {
@@ -91,11 +120,12 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
+  color-scheme: dark;
 }
 
 body {
-  background-color: var(--background);
-  color: var(--foreground);
+  background-color: var(--bg-base);
+  color: var(--fg-primary);
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.6;
@@ -104,39 +134,36 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Headings use Orbitron */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
-  letter-spacing: 0.04em;
-  line-height: 1.2;
+  letter-spacing: 0.05em;
+  line-height: 1.15;
+  color: var(--fg-primary);
 }
 
-/* ─────────────────────────────────────────────
-   Scrollbar styling
-   ───────────────────────────────────────────── */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: var(--background-secondary);
-}
+/* ═══════════════════════════════════════════════════════════════
+   Scrollbar
+   ═══════════════════════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg-dark); }
 ::-webkit-scrollbar-thumb {
-  background: var(--glass-border);
+  background: var(--border);
   border-radius: 3px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: var(--cyan-glow);
+::-webkit-scrollbar-thumb:hover { background: var(--green-electric); }
+
+/* ═══════════════════════════════════════════════════════════════
+   Focus ring
+   ═══════════════════════════════════════════════════════════════ */
+:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
 }
 
-/* ─────────────────────────────────────────────
-   Glass morphism card utility
-   ───────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   Glass card
+   ═══════════════════════════════════════════════════════════════ */
 .glass {
   background: var(--glass-bg);
   backdrop-filter: blur(var(--glass-blur));
@@ -145,114 +172,125 @@ h6 {
   border-radius: var(--radius-lg);
 }
 
-.glass-cyan {
+.glass-green {
   background: var(--glass-bg);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid rgba(0, 212, 255, 0.25);
+  border: 1px solid rgba(0, 255, 102, 0.25);
   border-radius: var(--radius-lg);
-  box-shadow: 0 0 20px var(--cyan-dim), inset 0 1px 0 rgba(0, 212, 255, 0.1);
+  box-shadow: 0 0 24px var(--green-dim), inset 0 1px 0 rgba(0, 255, 102, 0.08);
 }
 
-.glass-purple {
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid rgba(123, 0, 255, 0.3);
-  border-radius: var(--radius-lg);
-  box-shadow:
-    0 0 20px var(--purple-dim),
-    inset 0 1px 0 rgba(123, 0, 255, 0.1);
+/* Card hover lift */
+.card-hover {
+  transition: transform var(--transition-base), box-shadow var(--transition-base),
+    border-color var(--transition-base);
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 255, 102, 0.35);
+  box-shadow: 0 8px 32px rgba(0, 255, 102, 0.15);
 }
 
-/* ─────────────────────────────────────────────
+/* ═══════════════════════════════════════════════════════════════
    Neon glow utilities
-   ───────────────────────────────────────────── */
-.glow-cyan {
-  text-shadow: 0 0 10px var(--cyan-glow), 0 0 30px var(--cyan-dim);
+   ═══════════════════════════════════════════════════════════════ */
+.glow-green {
+  text-shadow: 0 0 8px var(--green-glow), 0 0 24px var(--green-dim);
+}
+.glow-box-green {
+  box-shadow: 0 0 16px var(--green-glow), 0 0 40px var(--green-dim);
+}
+.glow-box-green-strong {
+  box-shadow: 0 0 20px var(--green-glow-strong), 0 0 60px var(--green-dim);
 }
 
-.glow-purple {
-  text-shadow: 0 0 10px var(--purple-glow), 0 0 30px var(--purple-dim);
-}
-
-.glow-box-cyan {
-  box-shadow: 0 0 15px var(--cyan-glow), 0 0 40px var(--cyan-dim);
-}
-
-.glow-box-purple {
-  box-shadow: 0 0 15px var(--purple-glow), 0 0 40px var(--purple-dim);
-}
-
-/* ─────────────────────────────────────────────
-   Page transition (Req 16 — ≤300ms)
-   ───────────────────────────────────────────── */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.page-enter {
-  animation: fadeIn var(--transition-base) ease both;
-}
-
-/* ─────────────────────────────────────────────
-   Focus ring — accessible, on-brand
-   ───────────────────────────────────────────── */
-:focus-visible {
-  outline: 2px solid var(--cyan);
-  outline-offset: 3px;
-  border-radius: var(--radius-sm);
-}
-
-/* ─────────────────────────────────────────────
-   Neon gradient text
-   ───────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   Gradient utilities
+   ═══════════════════════════════════════════════════════════════ */
 .gradient-text {
-  background: linear-gradient(135deg, var(--cyan) 0%, var(--purple) 100%);
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* ─────────────────────────────────────────────
-   Neon separator
-   ───────────────────────────────────────────── */
+.gradient-text-gaming {
+  background: var(--gradient-gaming);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-bg-primary {
+  background: var(--gradient-primary);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Neon divider
+   ═══════════════════════════════════════════════════════════════ */
 .neon-divider {
   height: 1px;
   background: linear-gradient(
     90deg,
     transparent 0%,
-    var(--cyan) 50%,
+    var(--green) 50%,
     transparent 100%
   );
-  opacity: 0.4;
+  opacity: 0.3;
 }
 
-/* ─────────────────────────────────────────────
-   Offline indicator banner
-   ───────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   Page enter animation (≤300ms — Req 16)
+   ═══════════════════════════════════════════════════════════════ */
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.page-enter {
+  animation: fadeSlideIn 250ms ease both;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Progress bar (XP / Level from design)
+   ═══════════════════════════════════════════════════════════════ */
+.progress-bar {
+  height: 6px;
+  background: var(--bg-surface);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: var(--gradient-primary);
+  border-radius: 99px;
+  box-shadow: 0 0 8px var(--green-glow);
+  transition: width 600ms ease;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Offline banner
+   ═══════════════════════════════════════════════════════════════ */
 .offline-banner {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: 0; left: 0; right: 0;
   background: var(--error);
   color: #fff;
   text-align: center;
   font-family: var(--font-body);
   font-size: 0.875rem;
+  font-weight: 600;
   padding: 10px 16px;
   z-index: 9999;
   transform: translateY(100%);
   transition: transform var(--transition-base);
 }
-.offline-banner.visible {
-  transform: translateY(0);
-}
+.offline-banner.visible { transform: translateY(0); }
+
+/* ═══════════════════════════════════════════════════════════════
+   Tournament status pill colours (used across listing / detail)
+   ═══════════════════════════════════════════════════════════════ */
+.status-open    { color: var(--green);   background: rgba(0,255,102,0.1);  border-color: rgba(0,255,102,0.3); }
+.status-ongoing { color: var(--warning); background: rgba(255,184,0,0.1); border-color: rgba(255,184,0,0.3); }
+.status-done    { color: var(--fg-muted);background: rgba(104,114,128,0.1);border-color: rgba(104,114,128,0.3); }

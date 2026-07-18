@@ -1,11 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Orbitron, Rajdhani, Geist_Mono } from "next/font/google";
+import { Orbitron, Exo_2, Geist_Mono } from "next/font/google";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import "./globals.css";
 
 /* ── Fonts ──────────────────────────────────────────────────────────────── */
 
+// Headings — Orbitron (matches design spec exactly)
 const orbitron = Orbitron({
   variable: "--font-orbitron",
   subsets: ["latin"],
@@ -13,8 +14,9 @@ const orbitron = Orbitron({
   display: "swap",
 });
 
-const rajdhani = Rajdhani({
-  variable: "--font-rajdhani",
+// Body / UI / Paragraphs — Exo 2 (replaces Rajdhani per design spec)
+const exo2 = Exo_2({
+  variable: "--font-exo2",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   display: "swap",
@@ -31,7 +33,7 @@ const geistMono = Geist_Mono({
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#0a0a0f",
+  themeColor: "#00ff66",
 };
 
 /* ── Metadata ────────────────────────────────────────────────────────────── */
@@ -85,7 +87,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${orbitron.variable} ${rajdhani.variable} ${geistMono.variable} h-full`}
+      className={`${orbitron.variable} ${exo2.variable} ${geistMono.variable} h-full`}
     >
       <body className="min-h-full flex flex-col antialiased">
         <Navbar />

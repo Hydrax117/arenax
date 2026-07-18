@@ -7,20 +7,32 @@ interface SpinnerProps {
   label?: string;
 }
 
-const sizeClasses = { sm: "h-4 w-4", md: "h-6 w-6", lg: "h-10 w-10" };
+const sizeClasses = {
+  sm: "h-4 w-4",
+  md: "h-6 w-6",
+  lg: "h-10 w-10",
+};
 
-export function Spinner({ size = "md", className, label = "Loading…" }: SpinnerProps) {
+export function Spinner({
+  size = "md",
+  className,
+  label = "Loading…",
+}: SpinnerProps) {
   return (
-    <span role="status" aria-label={label} className={cn("inline-flex items-center justify-center", className)}>
+    <span
+      role="status"
+      aria-label={label}
+      className={cn("inline-flex items-center justify-center", className)}
+    >
       <svg
-        className={cn("animate-spin text-cyan", sizeClasses[size])}
+        className={cn("animate-spin text-green", sizeClasses[size])}
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
         aria-hidden="true"
       >
         <circle
-          className="opacity-25"
+          className="opacity-20"
           cx="12"
           cy="12"
           r="10"
@@ -28,7 +40,7 @@ export function Spinner({ size = "md", className, label = "Loading…" }: Spinne
           strokeWidth="4"
         />
         <path
-          className="opacity-75"
+          className="opacity-80"
           fill="currentColor"
           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
         />

@@ -3,52 +3,71 @@ import { cn } from "@/lib/utils";
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "ghost" | "danger" | "outline";
+  /** Visual style variant — matches the design spec button examples */
+  variant?: "primary" | "outline" | "ghost" | "danger" | "gaming";
   size?: "sm" | "md" | "lg";
   loading?: boolean;
+  /** Optional left-side icon */
+  iconLeft?: React.ReactNode;
+  /** Optional right-side icon */
+  iconRight?: React.ReactNode;
 }
 
 const variantClasses: Record<NonNullable<ButtonProps["variant"]>, string> = {
+  // ── Primary — neon green fill (design: "Primary Button") ──
   primary: [
-    "bg-cyan text-[#0a0a0f] font-semibold",
-    "hover:brightness-110 active:scale-95",
-    "shadow-[0_0_15px_rgba(0,212,255,0.4)]",
-    "hover:shadow-[0_0_25px_rgba(0,212,255,0.6)]",
+    "bg-green text-bg-base font-semibold",
+    "hover:bg-green-electric active:scale-[0.97]",
+    "shadow-[0_0_16px_rgba(0,255,102,0.4)]",
+    "hover:shadow-[0_0_28px_rgba(0,255,102,0.6)]",
+    "transition-all",
   ].join(" "),
 
-  secondary: [
-    "bg-purple text-white font-semibold",
-    "hover:brightness-110 active:scale-95",
-    "shadow-[0_0_15px_rgba(123,0,255,0.4)]",
-    "hover:shadow-[0_0_25px_rgba(123,0,255,0.6)]",
-  ].join(" "),
-
+  // ── Outline — green border (design: "Hover State" / secondary CTA) ──
   outline: [
-    "border border-[rgba(0,212,255,0.4)] text-cyan bg-transparent",
-    "hover:bg-[rgba(0,212,255,0.08)] active:scale-95",
+    "border border-green text-green bg-transparent",
+    "hover:bg-[rgba(0,255,102,0.08)] active:scale-[0.97]",
+    "shadow-[0_0_8px_rgba(0,255,102,0.15)]",
+    "hover:shadow-[0_0_16px_rgba(0,255,102,0.3)]",
+    "transition-all",
   ].join(" "),
 
+  // ── Ghost — no border (design: "Ghost Button") ──
   ghost: [
-    "text-foreground-muted bg-transparent",
-    "hover:text-foreground hover:bg-[rgba(255,255,255,0.06)] active:scale-95",
+    "text-fg-secondary bg-transparent border border-border",
+    "hover:text-fg-primary hover:border-border-light active:scale-[0.97]",
+    "transition-all",
   ].join(" "),
 
+  // ── Danger ──
   danger: [
     "bg-error text-white font-semibold",
-    "hover:brightness-110 active:scale-95",
+    "hover:brightness-110 active:scale-[0.97]",
+    "transition-all",
+  ].join(" "),
+
+  // ── Gaming gradient — primary + purple (design: "Gaming Gradient") ──
+  gaming: [
+    "text-white font-semibold",
+    "bg-[linear-gradient(135deg,#00ff66_0%,#8a2be2_100%)]",
+    "hover:brightness-110 active:scale-[0.97]",
+    "shadow-[0_0_20px_rgba(0,255,102,0.3)]",
+    "transition-all",
   ].join(" "),
 };
 
 const sizeClasses: Record<NonNullable<ButtonProps["size"]>, string> = {
-  sm: "h-9 px-4 text-sm rounded-md",
-  md: "h-11 px-6 text-base rounded-lg",
-  lg: "h-[52px] px-8 text-lg rounded-xl",
+  sm: "h-9 px-4 text-sm rounded-md gap-1.5",
+  md: "h-11 px-5 text-sm rounded-lg gap-2",    // 44px = min touch target (Req 16)
+  lg: "h-[52px] px-7 text-base rounded-lg gap-2",
 };
 
 export function Button({
   variant = "primary",
   size = "md",
   loading = false,
+  iconLeft,
+  iconRight,
   disabled,
   className,
   children,
@@ -58,11 +77,10 @@ export function Button({
     <button
       disabled={disabled || loading}
       className={cn(
-        // Base — meets 44px touch target (Req 16)
-        "inline-flex items-center justify-center gap-2 font-body",
-        "transition-all duration-150 cursor-pointer",
-        "disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100",
-        "min-h-[44px] min-w-[44px]",
+        "inline-flex items-center justify-center font-body font-medium",
+        "cursor-pointer select-none",
+        "disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 disabled:shadow-none",
+        "min-h-[44px] min-w-[44px]", // Req 16 — 44×44 touch targets
         variantClasses[variant],
         sizeClasses[size],
         className,
@@ -71,17 +89,29 @@ export function Button({
     >
       {loading ? (
         <>
-          <Spinner />
+          <ButtonSpinner />
           <span>{children}</span>
         </>
       ) : (
-        children
+        <>
+          {iconLeft && (
+            <span className="shrink-0" aria-hidden="true">
+              {iconLeft}
+            </span>
+          )}
+          {children}
+          {iconRight && (
+            <span className="shrink-0" aria-hidden="true">
+              {iconRight}
+            </span>
+          )}
+        </>
       )}
     </button>
   );
 }
 
-function Spinner() {
+function ButtonSpinner() {
   return (
     <svg
       className="animate-spin h-4 w-4 shrink-0"

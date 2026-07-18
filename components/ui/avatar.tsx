@@ -12,7 +12,7 @@ interface AvatarProps {
 const sizeMap = {
   xs: { px: 24, class: "h-6 w-6 text-xs" },
   sm: { px: 32, class: "h-8 w-8 text-sm" },
-  md: { px: 40, class: "h-10 w-10 text-base" },
+  md: { px: 40, class: "h-10 w-10 text-sm" },
   lg: { px: 56, class: "h-14 w-14 text-lg" },
   xl: { px: 80, class: "h-20 w-20 text-2xl" },
 };
@@ -29,8 +29,8 @@ export function Avatar({ src, alt, size = "md", className }: AvatarProps) {
     <div
       className={cn(
         "relative inline-flex shrink-0 items-center justify-center rounded-full overflow-hidden",
-        "border border-[rgba(0,212,255,0.2)] bg-[rgba(0,212,255,0.08)]",
-        "font-heading font-bold text-cyan",
+        "border border-[rgba(0,255,102,0.25)] bg-bg-surface",
+        "font-heading font-bold text-green",
         sizeClass,
         className,
       )}
