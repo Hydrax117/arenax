@@ -2,9 +2,9 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { ArrowRight, Loader2, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { createClient as createBrowserClient } from "@/lib/supabase/client";
 
 type Status = "idle" | "loading" | "resending" | "error" | "success";
 
@@ -14,8 +14,6 @@ interface VerifyResponse {
   reason?: string;
   needsOnboarding?: boolean;
   email?: string;
-  token?: string;
-  tokenType?: "magiclink";
 }
 
 const CODE_LENGTH = 6;
@@ -32,7 +30,12 @@ export function VerifyForm() {
   const [cooldown, setCooldown] = useState(0);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  // Countdown timer for resend cooldown
+  // Auto-focus first input on mount
+  useEffect(() => {
+    inputRefs.current[0]?.focus();
+  }, []);
+
+  // Resend countdown
   useEffect(() => {
     if (cooldown <= 0) return;
     const t = setInterval(() => setCooldown((c) => Math.max(0, c - 1)), 1000);
@@ -40,10 +43,10 @@ export function VerifyForm() {
   }, [cooldown]);
 
   const code = digits.join("");
-  const isComplete = code.length === CODE_LENGTH && !code.includes(" ");
+  const isComplete = digits.every((d) => d !== "");
 
   function handleDigitChange(i: number, value: string) {
-    // Allow paste of full code
+    // Handle paste of full code
     if (value.length > 1) {
       const pasted = value.replace(/\D/g, "").slice(0, CODE_LENGTH);
       const next = Array(CODE_LENGTH).fill("");
@@ -52,14 +55,11 @@ export function VerifyForm() {
       inputRefs.current[Math.min(pasted.length, CODE_LENGTH - 1)]?.focus();
       return;
     }
-
     const digit = value.replace(/\D/g, "");
     const next = [...digits];
     next[i] = digit;
     setDigits(next);
-    if (digit && i < CODE_LENGTH - 1) {
-      inputRefs.current[i + 1]?.focus();
-    }
+    if (digit && i < CODE_LENGTH - 1) inputRefs.current[i + 1]?.focus();
   }
 
   function handleKeyDown(i: number, e: React.KeyboardEvent) {
@@ -79,40 +79,42 @@ export function VerifyForm() {
     setErrorMsg("");
 
     try {
-      const res = await fetch("/api/auth/verify-otp", {
+      // Step 1: Verify our custom OTP server-side
+      const verifyRes = await fetch("/api/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, code: submittedCode }),
       });
 
-      const data = (await res.json()) as VerifyResponse;
+      const verifyData = (await verifyRes.json()) as VerifyResponse;
 
-      if (!data.success || !data.token) {
+      if (!verifyData.success) {
         setStatus("error");
-        setErrorMsg(data.message ?? "Verification failed.");
-        if (data.reason === "max_attempts" || data.reason === "expired") {
+        setErrorMsg(verifyData.message ?? "Verification failed.");
+        if (verifyData.reason === "max_attempts" || verifyData.reason === "expired") {
           setDigits(Array(CODE_LENGTH).fill(""));
           inputRefs.current[0]?.focus();
         }
         return;
       }
 
-      // Exchange the hashed token for a browser session
-      const supabase = createBrowserClient();
-      const { error: sessionError } = await supabase.auth.verifyOtp({
-        token_hash: data.token,
-        type: "magiclink",
+      // Step 2: Create NextAuth session with the verified credentials
+      const signInResult = await signIn("otp", {
+        email,
+        code: submittedCode,
+        redirect: false,
       });
 
-      if (sessionError) {
+      if (signInResult?.error) {
         setStatus("error");
-        setErrorMsg("Failed to establish session. Please try again.");
+        setErrorMsg("Failed to create session. Please try again.");
         return;
       }
 
       setStatus("success");
 
-      if (data.needsOnboarding) {
+      // Route based on onboarding status
+      if (verifyData.needsOnboarding) {
         router.push(`/onboarding?redirect=${encodeURIComponent(redirect)}`);
       } else {
         router.push(redirect);
@@ -156,13 +158,12 @@ export function VerifyForm() {
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-5">
-      {/* Email display */}
       <p className="font-body text-sm text-fg-secondary text-center">
         Code sent to{" "}
         <span className="text-fg-primary font-semibold">{email}</span>
       </p>
 
-      {/* OTP digit inputs */}
+      {/* 6-digit inputs */}
       <div
         className="flex gap-2 justify-center"
         role="group"
@@ -174,7 +175,7 @@ export function VerifyForm() {
             ref={(el) => { inputRefs.current[i] = el; }}
             type="text"
             inputMode="numeric"
-            maxLength={CODE_LENGTH} // allow paste on first input
+            maxLength={CODE_LENGTH}
             value={digit}
             onChange={(e) => handleDigitChange(i, e.target.value)}
             onKeyDown={(e) => handleKeyDown(i, e)}
@@ -196,14 +197,12 @@ export function VerifyForm() {
         ))}
       </div>
 
-      {/* Error message */}
       {status === "error" && errorMsg && (
         <p role="alert" className="text-xs text-error font-body text-center">
           {errorMsg}
         </p>
       )}
 
-      {/* Submit */}
       <button
         type="submit"
         disabled={!isComplete || isLoading}
@@ -228,11 +227,10 @@ export function VerifyForm() {
         )}
       </button>
 
-      {/* Resend */}
       <div className="text-center">
         {cooldown > 0 ? (
           <p className="font-body text-xs text-fg-muted">
-            Resend available in{" "}
+            Resend in{" "}
             <span className="text-fg-secondary font-semibold">{cooldown}s</span>
           </p>
         ) : (

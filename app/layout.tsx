@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Orbitron, Exo_2, Geist_Mono } from "next/font/google";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { AuthSessionProvider } from "@/components/providers/session-provider";
 import "./globals.css";
 
 /* ── Fonts ──────────────────────────────────────────────────────────────── */
@@ -90,9 +91,11 @@ export default function RootLayout({
       className={`${orbitron.variable} ${exo2.variable} ${geistMono.variable} h-full`}
     >
       <body className="min-h-full flex flex-col antialiased">
-        <Navbar />
-        <main className="flex-1 page-enter">{children}</main>
-        <Footer />
+        <AuthSessionProvider>
+          <Navbar />
+          <main className="flex-1 page-enter">{children}</main>
+          <Footer />
+        </AuthSessionProvider>
       </body>
     </html>
   );

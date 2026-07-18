@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { createClient } from "@/lib/supabase/server";
+import { auth } from "@/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { NIGERIAN_STATES } from "@/lib/constants";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -27,19 +27,15 @@ const schema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    // Authenticate the caller
-    const supabase = await createClient();
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
+    // Authenticate the caller via next-auth
+    const session = await auth();
+    if (!session?.user?.id) {
       return NextResponse.json(
         { success: false, message: "Unauthorised" },
         { status: 401 },
       );
     }
+    const userId = session.user.id;
 
     const body: unknown = await req.json();
     const parsed = schema.safeParse(body);
@@ -65,7 +61,7 @@ export async function POST(req: NextRequest) {
       .from("profiles")
       .select("id")
       .eq("gamertag", gamertag)
-      .neq("id", user.id)
+      .neq("id", userId)
       .maybeSingle();
 
     if (existing) {
@@ -84,7 +80,7 @@ export async function POST(req: NextRequest) {
       .from("profiles")
       .upsert(
         {
-          id: user.id,
+          id: userId,
           gamertag,
           efootball_username,
           nigerian_state,
