@@ -1,26 +1,258 @@
 @import "tailwindcss";
 
+/* ─────────────────────────────────────────────
+   ArenaX Design Tokens
+   ───────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Backgrounds */
+  --background: #0a0a0f;
+  --background-secondary: #0f0f1a;
+  --background-card: rgba(15, 15, 26, 0.6);
+
+  /* Foregrounds */
+  --foreground: #e8e8f0;
+  --foreground-muted: #8888aa;
+
+  /* Accent – electric cyan */
+  --cyan: #00d4ff;
+  --cyan-dim: rgba(0, 212, 255, 0.15);
+  --cyan-glow: rgba(0, 212, 255, 0.4);
+
+  /* Accent – deep purple */
+  --purple: #7b00ff;
+  --purple-dim: rgba(123, 0, 255, 0.15);
+  --purple-glow: rgba(123, 0, 255, 0.4);
+
+  /* Semantic */
+  --success: #00ff88;
+  --warning: #ffaa00;
+  --error: #ff3366;
+
+  /* Glass morphism */
+  --glass-bg: rgba(15, 15, 26, 0.6);
+  --glass-border: rgba(0, 212, 255, 0.12);
+  --glass-blur: 12px;
+
+  /* Typography */
+  --font-heading: var(--font-orbitron), "Orbitron", sans-serif;
+  --font-body: var(--font-rajdhani), "Rajdhani", sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 300ms ease;
+
+  /* Touch targets */
+  --touch-min: 44px;
+
+  /* Borders */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
 }
 
+/* ─────────────────────────────────────────────
+   Tailwind v4 theme extension
+   ───────────────────────────────────────────── */
 @theme inline {
+  /* Map CSS vars into Tailwind utilities */
   --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
+  --color-background-card: var(--background-card);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-foreground-muted: var(--foreground-muted);
+
+  --color-cyan: var(--cyan);
+  --color-cyan-dim: var(--cyan-dim);
+  --color-cyan-glow: var(--cyan-glow);
+
+  --color-purple: var(--purple);
+  --color-purple-dim: var(--purple-dim);
+  --color-purple-glow: var(--purple-glow);
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+
+  --font-heading: var(--font-heading);
+  --font-body: var(--font-body);
+  --font-mono: var(--font-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─────────────────────────────────────────────
+   Base reset & global styles
+   ───────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  min-height: 100svh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings use Orbitron */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+/* ─────────────────────────────────────────────
+   Scrollbar styling
+   ───────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background-secondary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--cyan-glow);
+}
+
+/* ─────────────────────────────────────────────
+   Glass morphism card utility
+   ───────────────────────────────────────────── */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+}
+
+.glass-cyan {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid rgba(0, 212, 255, 0.25);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 0 20px var(--cyan-dim), inset 0 1px 0 rgba(0, 212, 255, 0.1);
+}
+
+.glass-purple {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid rgba(123, 0, 255, 0.3);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    0 0 20px var(--purple-dim),
+    inset 0 1px 0 rgba(123, 0, 255, 0.1);
+}
+
+/* ─────────────────────────────────────────────
+   Neon glow utilities
+   ───────────────────────────────────────────── */
+.glow-cyan {
+  text-shadow: 0 0 10px var(--cyan-glow), 0 0 30px var(--cyan-dim);
+}
+
+.glow-purple {
+  text-shadow: 0 0 10px var(--purple-glow), 0 0 30px var(--purple-dim);
+}
+
+.glow-box-cyan {
+  box-shadow: 0 0 15px var(--cyan-glow), 0 0 40px var(--cyan-dim);
+}
+
+.glow-box-purple {
+  box-shadow: 0 0 15px var(--purple-glow), 0 0 40px var(--purple-dim);
+}
+
+/* ─────────────────────────────────────────────
+   Page transition (Req 16 — ≤300ms)
+   ───────────────────────────────────────────── */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter {
+  animation: fadeIn var(--transition-base) ease both;
+}
+
+/* ─────────────────────────────────────────────
+   Focus ring — accessible, on-brand
+   ───────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* ─────────────────────────────────────────────
+   Neon gradient text
+   ───────────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, var(--cyan) 0%, var(--purple) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─────────────────────────────────────────────
+   Neon separator
+   ───────────────────────────────────────────── */
+.neon-divider {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--cyan) 50%,
+    transparent 100%
+  );
+  opacity: 0.4;
+}
+
+/* ─────────────────────────────────────────────
+   Offline indicator banner
+   ───────────────────────────────────────────── */
+.offline-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--error);
+  color: #fff;
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  padding: 10px 16px;
+  z-index: 9999;
+  transform: translateY(100%);
+  transition: transform var(--transition-base);
+}
+.offline-banner.visible {
+  transform: translateY(0);
 }
