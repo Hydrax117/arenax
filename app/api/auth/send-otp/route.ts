@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { storeOtp } from "@/lib/otp";
-import { sendOtpEmail } from "@/lib/email";
+import { createClient } from "@supabase/supabase-js";
 
 const schema = z.object({
   email: z
@@ -11,10 +10,9 @@ const schema = z.object({
     .toLowerCase(),
 });
 
-// Loose rate-limit: track last-sent per email in memory.
-// Replace with Redis/Upstash for production scale.
+// Loose in-memory rate limit (60s per email)
 const lastSent = new Map<string, number>();
-const COOLDOWN_MS = 60_000; // 60 seconds between sends
+const COOLDOWN_MS = 60_000;
 
 export async function POST(req: NextRequest) {
   try {
@@ -30,24 +28,37 @@ export async function POST(req: NextRequest) {
 
     const { email } = parsed.data;
 
-    // Cooldown check
+    // Rate limit check
     const last = lastSent.get(email);
     if (last && Date.now() - last < COOLDOWN_MS) {
       const secondsLeft = Math.ceil((COOLDOWN_MS - (Date.now() - last)) / 1000);
       return NextResponse.json(
-        {
-          success: false,
-          message: `Please wait ${secondsLeft}s before requesting another code.`,
-        },
+        { success: false, message: `Please wait ${secondsLeft}s before requesting another code.` },
         { status: 429 },
       );
     }
 
-    // Generate and store OTP
-    const code = await storeOtp(email);
+    // Use Supabase's native email OTP — no custom email sending needed
+    // Supabase sends a 6-digit OTP to the user's inbox
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    );
 
-    // Send email
-    await sendOtpEmail(email, code);
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        shouldCreateUser: true,
+      },
+    });
+
+    if (error) {
+      console.error("[send-otp] Supabase error:", error.message);
+      return NextResponse.json(
+        { success: false, message: "Failed to send code. Please try again." },
+        { status: 500 },
+      );
+    }
 
     lastSent.set(email, Date.now());
 

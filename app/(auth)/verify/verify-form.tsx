@@ -11,12 +11,8 @@ type Status = "idle" | "loading" | "resending" | "error" | "success";
 interface VerifyResponse {
   success: boolean;
   message?: string;
-  reason?: string;
   needsOnboarding?: boolean;
-  userId?: string;
-  email?: string;
-  token?: string;
-  tokenType?: "magiclink";
+  session?: { access_token: string; refresh_token: string };
 }
 
 const CODE_LENGTH = 6;
@@ -83,26 +79,25 @@ export function VerifyForm() {
       const res = await fetch("/api/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, code: submittedCode }),
+        body: JSON.stringify({ email, token: submittedCode }),
       });
 
       const data = (await res.json()) as VerifyResponse;
 
-      if (!data.success || !data.token) {
+      if (!data.success || !data.session) {
         setStatus("error");
         setErrorMsg(data.message ?? "Verification failed.");
-        if (data.reason === "max_attempts" || data.reason === "expired") {
-          setDigits(Array(CODE_LENGTH).fill(""));
-          inputRefs.current[0]?.focus();
-        }
+        // Clear digits so user can re-enter
+        setDigits(Array(CODE_LENGTH).fill(""));
+        inputRefs.current[0]?.focus();
         return;
       }
 
-      // Exchange the server-generated token for a real browser session
+      // Set the session in the browser Supabase client
       const supabase = createBrowserClient();
-      const { error: sessionError } = await supabase.auth.verifyOtp({
-        token_hash: data.token,
-        type: "magiclink",
+      const { error: sessionError } = await supabase.auth.setSession({
+        access_token: data.session.access_token,
+        refresh_token: data.session.refresh_token,
       });
 
       if (sessionError) {
@@ -113,12 +108,11 @@ export function VerifyForm() {
 
       setStatus("success");
 
-      // Route based on onboarding status
       if (data.needsOnboarding) {
         router.push(`/onboarding?redirect=${encodeURIComponent(redirect)}`);
       } else {
         router.push(redirect);
-        router.refresh(); // force server component re-render with new session
+        router.refresh();
       }
     } catch {
       setStatus("error");
