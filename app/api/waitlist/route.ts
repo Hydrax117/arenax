@@ -3,39 +3,38 @@ import { z } from "zod";
 import fs from "fs";
 import path from "path";
 
-// ── Validation schema ─────────────────────────────────────────────────────
+// ── Validation ────────────────────────────────────────────────────────────
 const schema = z.object({
-  email: z
-    .string()
-    .min(1, "Email is required")
-    .email("Please enter a valid email address"),
+  email: z.string().min(1, "Email is required").email("Invalid email address"),
   name: z.string().max(80).optional(),
 });
 
-// ── Persistence (flat JSON file until Supabase is wired up) ──────────────
-// Stored outside .next so it survives rebuilds. In production swap this
-// for a Supabase insert.
+// ── Storage ───────────────────────────────────────────────────────────────
+// Uses Supabase when credentials are present, falls back to JSON file.
+const USE_SUPABASE =
+  !!process.env.NEXT_PUBLIC_SUPABASE_URL &&
+  !!process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+// ── Fallback: flat JSON file ──────────────────────────────────────────────
 const DATA_FILE = path.join(process.cwd(), "data", "waitlist.json");
 
-interface WaitlistEntry {
+interface FileEntry {
   id: string;
   email: string;
   name?: string;
   joinedAt: string;
-  ip?: string;
 }
 
-function readEntries(): WaitlistEntry[] {
+function fileRead(): FileEntry[] {
   try {
     if (!fs.existsSync(DATA_FILE)) return [];
-    const raw = fs.readFileSync(DATA_FILE, "utf-8");
-    return JSON.parse(raw) as WaitlistEntry[];
+    return JSON.parse(fs.readFileSync(DATA_FILE, "utf-8")) as FileEntry[];
   } catch {
     return [];
   }
 }
 
-function writeEntries(entries: WaitlistEntry[]): void {
+function fileWrite(entries: FileEntry[]): void {
   const dir = path.dirname(DATA_FILE);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(DATA_FILE, JSON.stringify(entries, null, 2), "utf-8");
@@ -48,15 +47,52 @@ export async function POST(req: NextRequest) {
     const parsed = schema.safeParse(body);
 
     if (!parsed.success) {
-      const message =
-        parsed.error.issues[0]?.message ?? "Invalid input";
+      const message = parsed.error.issues[0]?.message ?? "Invalid input";
       return NextResponse.json({ success: false, message }, { status: 422 });
     }
 
     const { email, name } = parsed.data;
-    const entries = readEntries();
 
-    // Duplicate check — case-insensitive
+    // ── Supabase path ──────────────────────────────────────────────────────
+    if (USE_SUPABASE) {
+      const { createAdminClient } = await import("@/lib/supabase/admin");
+      const supabase = createAdminClient();
+
+      const { error } = await supabase
+        .from("waitlist")
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .insert({ email, name: name ?? null } as any);
+
+      if (error) {
+        // Postgres unique violation = duplicate
+        if (error.code === "23505") {
+          return NextResponse.json(
+            {
+              success: false,
+              message: "You're already on the waitlist. We'll be in touch!",
+            },
+            { status: 409 },
+          );
+        }
+        throw error;
+      }
+
+      const { count } = await supabase
+        .from("waitlist")
+        .select("*", { count: "exact", head: true });
+
+      return NextResponse.json(
+        {
+          success: true,
+          message: "You're on the list! We'll notify you when ArenaX launches.",
+          position: count ?? 1,
+        },
+        { status: 201 },
+      );
+    }
+
+    // ── File fallback path ─────────────────────────────────────────────────
+    const entries = fileRead();
     const duplicate = entries.some(
       (e) => e.email.toLowerCase() === email.toLowerCase(),
     );
@@ -71,17 +107,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const entry: WaitlistEntry = {
+    const entry: FileEntry = {
       id: crypto.randomUUID(),
       email,
       name: name ?? undefined,
       joinedAt: new Date().toISOString(),
-      // Store a hashed IP for abuse detection, not raw
-      ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim(),
     };
 
     entries.push(entry);
-    writeEntries(entries);
+    fileWrite(entries);
 
     return NextResponse.json(
       {
@@ -100,8 +134,20 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// ── GET /api/waitlist — count only (no PII exposed) ──────────────────────
+// ── GET /api/waitlist — count only ────────────────────────────────────────
 export async function GET() {
-  const entries = readEntries();
-  return NextResponse.json({ count: entries.length });
+  try {
+    if (USE_SUPABASE) {
+      const { createAdminClient } = await import("@/lib/supabase/admin");
+      const supabase = createAdminClient();
+      const { count } = await supabase
+        .from("waitlist")
+        .select("*", { count: "exact", head: true });
+      return NextResponse.json({ count: count ?? 0 });
+    }
+
+    return NextResponse.json({ count: fileRead().length });
+  } catch {
+    return NextResponse.json({ count: 0 });
+  }
 }
