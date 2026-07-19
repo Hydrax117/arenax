@@ -35,6 +35,7 @@ export type NotificationEvent =
 
 export interface Profile {
   id: string;
+  email: string | null;              // added for NextAuth JWT flow
   gamertag: string | null;           // null until onboarding complete
   efootball_username: string | null; // null until onboarding complete
   phone: string | null;

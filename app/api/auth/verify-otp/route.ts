@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { verifyOtp } from "@/lib/otp";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createPreAuthToken } from "@/lib/auth/pre-auth-token";
 
 const schema = z.object({
   email: z.string().email().toLowerCase(),
@@ -9,9 +9,9 @@ const schema = z.object({
 });
 
 const ERROR_MESSAGES: Record<string, string> = {
-  invalid: "Incorrect code. Please check and try again.",
-  expired: "This code has expired. Please request a new one.",
-  used: "This code has already been used. Please request a new one.",
+  invalid:      "Incorrect code. Please check and try again.",
+  expired:      "This code has expired. Please request a new one.",
+  used:         "This code has already been used. Please request a new one.",
   max_attempts: "Too many incorrect attempts. Please request a new code.",
 };
 
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
 
     const { email, code } = parsed.data;
 
-    // ── Step 1: Verify our custom OTP ─────────────────────────────────────
+    // Verify & consume the OTP (marks it as used)
     const result = await verifyOtp(email, code);
 
     if (!result.success) {
@@ -43,27 +43,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ── Step 2: Check onboarding status ──────────────────────────────────
-    // We look up the profile by email via the NextAuth users table
-    const admin = createAdminClient();
+    // Issue a short-lived pre-auth token so the client can call signIn()
+    // without re-running OTP verification (which would fail — already used)
+    const preAuthToken = createPreAuthToken(email);
 
-    const { data: profile } = (await admin
-      .from("profiles")
-      .select("id, gamertag, efootball_username")
-      .eq("id",
-        // Sub-select: get the NextAuth user id for this email
-        // The adapter stores users in the 'users' table (NextAuth convention)
-        admin.from("users").select("id").eq("email", email).limit(1)
-      )
-      .maybeSingle()) as { data: { id: string; gamertag: string | null; efootball_username: string | null } | null };
-
-    const needsOnboarding = !profile?.gamertag || !profile?.efootball_username;
-
-    // ── Step 3: Return verified signal ────────────────────────────────────
-    // The client will call next-auth signIn("otp") with the same credentials,
-    // which triggers our authorize() function and creates the session cookie.
     return NextResponse.json(
-      { success: true, needsOnboarding, email },
+      { success: true, email, preAuthToken },
       { status: 200 },
     );
   } catch (err) {

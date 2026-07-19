@@ -12,8 +12,8 @@ interface VerifyResponse {
   success: boolean;
   message?: string;
   reason?: string;
-  needsOnboarding?: boolean;
   email?: string;
+  preAuthToken?: string;
 }
 
 const CODE_LENGTH = 6;
@@ -21,32 +21,27 @@ const CODE_LENGTH = 6;
 export function VerifyForm() {
   const router = useRouter();
   const params = useSearchParams();
-  const email = params.get("email") ?? "";
+  const email    = params.get("email")    ?? "";
   const redirect = params.get("redirect") ?? "/dashboard";
 
-  const [digits, setDigits] = useState<string[]>(Array(CODE_LENGTH).fill(""));
-  const [status, setStatus] = useState<Status>("idle");
+  const [digits,   setDigits]   = useState<string[]>(Array(CODE_LENGTH).fill(""));
+  const [status,   setStatus]   = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const [cooldown, setCooldown] = useState(0);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  // Auto-focus first input on mount
-  useEffect(() => {
-    inputRefs.current[0]?.focus();
-  }, []);
+  useEffect(() => { inputRefs.current[0]?.focus(); }, []);
 
-  // Resend countdown
   useEffect(() => {
     if (cooldown <= 0) return;
     const t = setInterval(() => setCooldown((c) => Math.max(0, c - 1)), 1000);
     return () => clearInterval(t);
   }, [cooldown]);
 
-  const code = digits.join("");
   const isComplete = digits.every((d) => d !== "");
+  const isLoading  = status === "loading" || status === "resending";
 
   function handleDigitChange(i: number, value: string) {
-    // Handle paste of full code
     if (value.length > 1) {
       const pasted = value.replace(/\D/g, "").slice(0, CODE_LENGTH);
       const next = Array(CODE_LENGTH).fill("");
@@ -70,38 +65,37 @@ export function VerifyForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!isComplete || status === "loading") return;
-    await verify(code);
+    if (!isComplete || isLoading) return;
+    await verify(digits.join(""));
   }
 
-  async function verify(submittedCode: string) {
+  async function verify(code: string) {
     setStatus("loading");
     setErrorMsg("");
 
     try {
-      // Step 1: Verify our custom OTP server-side
-      const verifyRes = await fetch("/api/auth/verify-otp", {
+      // Step 1 — confirm OTP is correct server-side (fast, before signIn)
+      const checkRes = await fetch("/api/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, code: submittedCode }),
+        body: JSON.stringify({ email, code }),
       });
+      const checkData = (await checkRes.json()) as VerifyResponse;
 
-      const verifyData = (await verifyRes.json()) as VerifyResponse;
-
-      if (!verifyData.success) {
+      if (!checkData.success || !checkData.preAuthToken) {
         setStatus("error");
-        setErrorMsg(verifyData.message ?? "Verification failed.");
-        if (verifyData.reason === "max_attempts" || verifyData.reason === "expired") {
+        setErrorMsg(checkData.message ?? "Verification failed.");
+        if (checkData.reason === "max_attempts" || checkData.reason === "expired") {
           setDigits(Array(CODE_LENGTH).fill(""));
           inputRefs.current[0]?.focus();
         }
         return;
       }
 
-      // Step 2: Create NextAuth session with the verified credentials
+      // Step 2 — create the JWT session using the pre-auth token
       const signInResult = await signIn("otp", {
         email,
-        code: submittedCode,
+        preAuthToken: checkData.preAuthToken,
         redirect: false,
       });
 
@@ -113,8 +107,14 @@ export function VerifyForm() {
 
       setStatus("success");
 
-      // Route based on onboarding status
-      if (verifyData.needsOnboarding) {
+      // Step 3 — check onboarding status from the freshly created session
+      // Fetch the session to see needsOnboarding from the JWT callback
+      const sessionRes = await fetch("/api/auth/session");
+      const sessionData = (await sessionRes.json()) as {
+        user?: { needsOnboarding?: boolean };
+      };
+
+      if (sessionData?.user?.needsOnboarding) {
         router.push(`/onboarding?redirect=${encodeURIComponent(redirect)}`);
       } else {
         router.push(redirect);
@@ -127,7 +127,7 @@ export function VerifyForm() {
   }
 
   async function handleResend() {
-    if (cooldown > 0 || status === "resending") return;
+    if (cooldown > 0 || isLoading) return;
     setStatus("resending");
     setErrorMsg("");
 
@@ -153,8 +153,6 @@ export function VerifyForm() {
       setErrorMsg("Failed to resend. Please try again.");
     }
   }
-
-  const isLoading = status === "loading" || status === "resending";
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-5">

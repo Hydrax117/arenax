@@ -75,12 +75,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Upsert profile
+    // Upsert profile — include email so it's stored on first save
     const { error: upsertError } = await untyped(admin)
       .from("profiles")
       .upsert(
         {
           id: userId,
+          email: session.user.email ?? null,
           gamertag,
           efootball_username,
           nigerian_state,

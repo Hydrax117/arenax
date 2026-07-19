@@ -31,7 +31,7 @@ create type notification_event as enum (
 -- ───────────────────────────────────────────────────────────────────────────
 
 create table profiles (
-  id                  uuid primary key references auth.users(id) on delete cascade,
+  id                  uuid primary key default gen_random_uuid(),
   gamertag            text unique,               -- nullable until onboarding is complete
   efootball_username  text,                      -- nullable until onboarding is complete
   phone               text unique,
