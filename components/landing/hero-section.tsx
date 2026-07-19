@@ -47,14 +47,6 @@ export function HeroSection() {
 
           {/* Left — text */}
           <div className="flex-1 text-center lg:text-left max-w-2xl">
-            {/* Eyebrow */}
-            <div className="inline-flex items-center gap-2 mb-6 px-3 py-1.5 rounded-full border border-[rgba(0,224,90,0.18)] bg-[rgba(0,224,90,0.05)]">
-              <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse" aria-hidden="true" />
-              <span className="text-green text-xs font-semibold font-body tracking-widest uppercase">
-                Nigeria&apos;s #1 eFootball Arena
-              </span>
-            </div>
-
             {/* H1 — matches design H1 style: Orbitron 48px Bold */}
             <h1 className="font-heading font-black text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-[1.05] tracking-tight mb-6">
               <span className="text-fg-primary">THE ARENA</span>

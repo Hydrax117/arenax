@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
   { href: "/tournaments", label: "Tournaments", icon: Trophy },
-  { href: "/dashboard",   label: "Dashboard",   icon: LayoutDashboard },
+  { href: "/dashboard",   label: "Dashboard",   icon: LayoutDashboard, authOnly: true },
 ];
 
 export function Navbar() {
@@ -62,7 +62,7 @@ export function Navbar() {
 
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation">
-            {NAV_LINKS.map(({ href, label }) => {
+            {NAV_LINKS.filter(({ authOnly }) => !authOnly || !!user).map(({ href, label }) => {
               const active = pathname === href || pathname.startsWith(href + "/");
               return (
                 <Link key={href} href={href}
@@ -154,7 +154,7 @@ export function Navbar() {
       {mobileOpen && (
         <div id="mobile-nav" className="md:hidden border-t border-border bg-bg-dark px-4 pb-5 pt-3">
           <nav className="flex flex-col gap-1" aria-label="Mobile navigation">
-            {NAV_LINKS.map(({ href, label, icon: Icon }) => {
+            {NAV_LINKS.filter(({ authOnly }) => !authOnly || !!user).map(({ href, label, icon: Icon }) => {
               const active = pathname === href || pathname.startsWith(href + "/");
               return (
                 <Link key={href} href={href} onClick={() => setMobileOpen(false)}
