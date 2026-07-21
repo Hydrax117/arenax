@@ -39,6 +39,7 @@ export function WaitlistSection() {
 
   return (
     <section
+      id="waitlist"
       className="py-20 px-4 sm:px-6 lg:px-8 bg-bg-dark"
       aria-labelledby="waitlist-heading"
     >

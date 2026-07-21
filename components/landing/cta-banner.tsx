@@ -101,10 +101,10 @@ export function CtaBanner() {
               </p>
 
               <Link
-                href="/register"
+                href="/#waitlist"
                 className="inline-flex items-center justify-center gap-2 min-h-[52px] px-10 rounded-lg font-body font-bold text-base tracking-wide bg-green text-bg-base hover:bg-green-electric transition-all duration-150 shadow-[0_0_24px_rgba(0,224,90,0.28)] hover:shadow-[0_0_40px_rgba(0,224,90,0.42)] w-full"
               >
-                Create Account
+                Join the Waitlist
                 <ArrowRight size={18} aria-hidden="true" />
               </Link>
             </div>

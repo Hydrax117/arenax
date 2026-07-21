@@ -7,7 +7,6 @@ import "./globals.css";
 
 /* ── Fonts ──────────────────────────────────────────────────────────────── */
 
-// Headings — Orbitron (matches design spec exactly)
 const orbitron = Orbitron({
   variable: "--font-orbitron",
   subsets: ["latin"],
@@ -15,7 +14,6 @@ const orbitron = Orbitron({
   display: "swap",
 });
 
-// Body / UI / Paragraphs — Exo 2 (replaces Rajdhani per design spec)
 const exo2 = Exo_2({
   variable: "--font-exo2",
   subsets: ["latin"],
@@ -34,19 +32,73 @@ const geistMono = Geist_Mono({
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#00ff66",
+  themeColor: "#00e05a",
 };
 
 /* ── Metadata ────────────────────────────────────────────────────────────── */
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://arenax.com.ng"),
+
   title: {
-    default: "ArenaX",
+    default: "ArenaX — Nigeria's #1 eFootball Mobile Tournament Platform",
     template: "%s | ArenaX",
   },
   description:
-    "ArenaX — the competitive eFootball Mobile tournament platform for Nigerian players. Discover tournaments, register, compete, and win prizes.",
+    "Join ArenaX — Nigeria's competitive eFootball Mobile arena. Discover tournaments, register online, compete with the best players, and win real Naira prizes paid directly to your bank account.",
   applicationName: "ArenaX",
+  keywords: [
+    "eFootball Nigeria",
+    "eFootball Mobile tournament",
+    "Nigerian gaming",
+    "football gaming Nigeria",
+    "esports Nigeria",
+    "win Naira prizes",
+    "online tournament Nigeria",
+    "eFootball Mobile competition",
+    "ArenaX",
+    "ArenaX gaming",
+    "Amateur gaming"
+  ],
+  authors: [{ name: "ArenaX" }],
+  creator: "ArenaX",
+  publisher: "ArenaX",
+
+  // Open Graph
+  openGraph: {
+    type: "website",
+    locale: "en_NG",
+    url: "https://arenax.com.ng",
+    siteName: "ArenaX",
+    title: "ArenaX — Nigeria's #1 eFootball Mobile Tournament Platform",
+    description:
+      "Compete in eFootball Mobile tournaments across Nigeria. Register, play, and win real Naira prizes paid directly to your bank account.",
+    images: [
+      {
+        url: "/icons/android-chrome-512x512.png",
+        width: 512,
+        height: 512,
+        alt: "ArenaX logo",
+      },
+    ],
+  },
+
+  // Twitter / X
+  twitter: {
+    card: "summary",
+    title: "ArenaX — Nigeria's eFootball Arena",
+    description:
+      "Compete in eFootball Mobile tournaments and win Naira prizes.",
+    images: ["/icons/android-chrome-512x512.png"],
+  },
+
+  // Geo — Nigeria
+  other: {
+    "geo.region": "NG",
+    "geo.placename": "Nigeria",
+    "og:locale:alternate": "en_NG",
+  },
+
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
@@ -57,27 +109,17 @@ export const metadata: Metadata = {
     icon: [
       { url: "/icons/favicon-16x16.png", sizes: "16x16", type: "image/png" },
       { url: "/icons/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      {
-        url: "/icons/android-chrome-192x192.png",
-        sizes: "192x192",
-        type: "image/png",
-      },
-      {
-        url: "/icons/android-chrome-512x512.png",
-        sizes: "512x512",
-        type: "image/png",
-      },
+      { url: "/icons/android-chrome-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/android-chrome-512x512.png", sizes: "512x512", type: "image/png" },
     ],
-    apple: [
-      {
-        url: "/icons/apple-touch-icon.png",
-        sizes: "180x180",
-        type: "image/png",
-      },
-    ],
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
     shortcut: "/icons/favicon.ico",
   },
-  robots: { index: true, follow: true },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
 };
 
 /* ── Root Layout ─────────────────────────────────────────────────────────── */

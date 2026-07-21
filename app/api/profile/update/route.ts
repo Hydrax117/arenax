@@ -41,19 +41,36 @@ export async function PATCH(req: NextRequest) {
     const userId = session.user.id;
     const admin = createAdminClient();
 
-    // Uniqueness check (Req 2 criterion 4)
-    const { data: existing } = await admin
+    // Uniqueness check — gamertag (Req 2 criterion 4)
+    const { data: existingTag } = await admin
       .from("profiles")
       .select("id")
       .eq("gamertag", gamertag)
       .neq("id", userId)
       .maybeSingle();
 
-    if (existing) {
+    if (existingTag) {
       return NextResponse.json(
-        { success: false, message: "That gamertag is taken.", field: "gamertag" },
+        { success: false, message: "That gamertag is already taken. Please choose a different one.", field: "gamertag" },
         { status: 409 },
       );
+    }
+
+    // Uniqueness check — phone number
+    if (phone) {
+      const { data: existingPhone } = await admin
+        .from("profiles")
+        .select("id")
+        .eq("phone", phone)
+        .neq("id", userId)
+        .maybeSingle();
+
+      if (existingPhone) {
+        return NextResponse.json(
+          { success: false, message: "That phone number is already linked to another account. Please use a different number.", field: "phone" },
+          { status: 409 },
+        );
+      }
     }
 
     const { error } = await untyped(admin)
